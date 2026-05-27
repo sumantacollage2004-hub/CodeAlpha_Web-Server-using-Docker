@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Docker Web Server — Container Mastery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- NOISE OVERLAY -->
+  <div class="noise"></div>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">DOCK<em>ER</em></span>
+      </div>
+      <nav class="main-nav">
+        <a href="#basics" class="nav-link" data-section="basics">Basics</a>
+        <a href="#deploy" class="nav-link" data-section="deploy">Deploy</a>
+        <a href="#lifecycle" class="nav-link" data-section="lifecycle">Lifecycle</a>
+        <a href="#monitor" class="nav-link" data-section="monitor">Monitor</a>
+        <a href="#bestpractices" class="nav-link" data-section="bestpractices">Best Practices</a>
+      </nav>
+      <div class="terminal-badge">v26.1.0</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-label">CONTAINERIZATION MASTERY</div>
+        <h1 class="hero-title">Web Server<br/><span class="accent">inside Docker</span></h1>
+        <p class="hero-desc">Deploy, manage, monitor & troubleshoot web servers inside containers. From first pull to production-ready.</p>
+        <div class="hero-cta">
+          <button class="btn-primary" onclick="scrollToSection('basics')">Start Learning</button>
+          <button class="btn-ghost" id="terminalToggle">Open Terminal ▶</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><span class="stat-val">5</span><span class="stat-label">Modules</span></div>
+          <div class="stat"><span class="stat-val">30+</span><span class="stat-label">Commands</span></div>
+          <div class="stat"><span class="stat-val">100%</span><span class="stat-label">Hands-on</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="container-diagram" id="containerDiagram">
+          <div class="diagram-host">
+            <div class="diagram-label">HOST MACHINE</div>
+            <div class="diagram-docker">
+              <div class="diagram-label">DOCKER ENGINE</div>
+              <div class="diagram-containers">
+                <div class="d-container active" data-tip="nginx:latest — Port 80">
+                  <span class="d-icon">🌐</span>
+                  <span>nginx</span>
+                  <span class="d-status running">▶</span>
+                </div>
+                <div class="d-container" data-tip="node:alpine — Port 3000">
+                  <span class="d-icon">⬡</span>
+                  <span>node app</span>
+                  <span class="d-status stopped">■</span>
+                </div>
+                <div class="d-container" data-tip="mysql:8 — Port 3306">
+                  <span class="d-icon">🗄</span>
+                  <span>mysql</span>
+                  <span class="d-status running">▶</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="diagram-tooltip" id="diagramTooltip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAKE TERMINAL -->
+  <div class="terminal-overlay" id="terminalOverlay">
+    <div class="terminal-window">
+      <div class="terminal-titlebar">
+        <span class="t-dot red"></span>
+        <span class="t-dot yellow"></span>
+        <span class="t-dot green"></span>
+        <span class="t-title">bash — docker</span>
+        <button class="t-close" id="terminalClose">✕</button>
+      </div>
+      <div class="terminal-output" id="terminalOutput"></div>
+      <div class="terminal-inputrow">
+        <span class="t-prompt">$ </span>
+        <input type="text" class="terminal-input" id="terminalInput" placeholder="type a docker command…" autocomplete="off" spellcheck="false"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- MODULE 1 — BASICS -->
+    <section class="module" id="basics">
+      <div class="module-header">
+        <div class="module-number">01</div>
+        <div class="module-meta">
+          <h2>Docker Containerization Basics</h2>
+          <p>Understand the architecture and core concepts behind Docker.</p>
+        </div>
+      </div>
+
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-icon">📦</div>
+          <h3>Container vs VM</h3>
+          <p>Containers share the host OS kernel, making them lightweight and fast. VMs virtualise the entire hardware stack — heavier but fully isolated.</p>
+          <div class="concept-diagram small">
+            <div class="cmp-col">
+              <div class="cmp-layer app">App A</div>
+              <div class="cmp-layer libs">Libs</div>
+              <div class="cmp-layer docker">Docker Engine</div>
+              <div class="cmp-layer os">Host OS</div>
+              <div class="cmp-label">Container</div>
+            </div>
+            <div class="cmp-divider">vs</div>
+            <div class="cmp-col">
+              <div class="cmp-layer app">App A</div>
+              <div class="cmp-layer libs">Guest OS</div>
+              <div class="cmp-layer docker">Hypervisor</div>
+              <div class="cmp-layer os">Host OS</div>
+              <div class="cmp-label">VM</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-icon">🏗</div>
+          <h3>Key Components</h3>
+          <ul class="concept-list">
+            <li><strong>Dockerfile</strong> — Blueprint to build an image</li>
+            <li><strong>Image</strong> — Read-only snapshot of a container</li>
+            <li><strong>Container</strong> — Running instance of an image</li>
+            <li><strong>Registry</strong> — Image storage (Docker Hub)</li>
+            <li><strong>Volume</strong> — Persistent data storage</li>
+            <li><strong>Network</strong> — Container communication layer</li>
+          </ul>
+        </div>
+
+        <div class="concept-card full">
+          <div class="concept-icon">📄</div>
+          <h3>Sample Dockerfile — Nginx Web Server</h3>
+          <div class="code-block" data-lang="dockerfile">
+            <div class="code-copy" onclick="copyCode(this)">copy</div>
+            <pre><code><span class="kw">FROM</span> nginx:alpine
+
+<span class="cm"># Set working directory</span>
+<span class="kw">WORKDIR</span> /usr/share/nginx/html
+
+<span class="cm"># Copy static site files</span>
+<span class="kw">COPY</span> ./public .
+
+<span class="cm"># Expose port 80</span>
+<span class="kw">EXPOSE</span> 80
+
+<span class="cm"># Default command</span>
+<span class="kw">CMD</span> ["nginx", "-g", "daemon off;"]</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Commands -->
+      <div class="cmd-section">
+        <h3 class="cmd-title">Essential Commands</h3>
+        <div class="cmd-grid" id="basicsCmds"></div>
+      </div>
+    </section>
+
+    <!-- MODULE 2 — DEPLOY -->
+    <section class="module" id="deploy">
+      <div class="module-header">
+        <div class="module-number">02</div>
+        <div class="module-meta">
+          <h2>Deploy & Manage Web Server</h2>
+          <p>Pull images, run containers, map ports, and serve your first web page.</p>
+        </div>
+      </div>
+
+      <div class="deploy-steps" id="deploySteps"></div>
+
+      <div class="concept-card mt">
+        <div class="concept-icon">🔗</div>
+        <h3>Port Mapping Explained</h3>
+        <div class="port-diagram">
+          <div class="port-box host">
+            <div class="port-label">HOST</div>
+            <div class="port-num">:8080</div>
+          </div>
+          <div class="port-arrow">
+            <span>→</span>
+            <span class="port-flag">-p 8080:80</span>
+          </div>
+          <div class="port-box container">
+            <div class="port-label">CONTAINER</div>
+            <div class="port-num">:80</div>
+          </div>
+        </div>
+        <p class="mt-sm">Traffic arriving at <strong>host port 8080</strong> is forwarded to <strong>container port 80</strong> where Nginx listens.</p>
+      </div>
+    </section>
+
+    <!-- MODULE 3 — LIFECYCLE -->
+    <section class="module" id="lifecycle">
+      <div class="module-header">
+        <div class="module-number">03</div>
+        <div class="module-meta">
+          <h2>Container Lifecycle</h2>
+          <p>Track every state a container passes through — from creation to removal.</p>
+        </div>
+      </div>
+
+      <div class="lifecycle-flow" id="lifecycleFlow"></div>
+
+      <div class="cmd-section">
+        <h3 class="cmd-title">Lifecycle Commands</h3>
+        <div class="cmd-grid" id="lifecycleCmds"></div>
+      </div>
+    </section>
+
+    <!-- MODULE 4 — MONITOR -->
+    <section class="module" id="monitor">
+      <div class="module-header">
+        <div class="module-number">04</div>
+        <div class="module-meta">
+          <h2>Monitor & Troubleshoot</h2>
+          <p>Inspect logs, resource usage, and diagnose container issues.</p>
+        </div>
+      </div>
+
+      <!-- Live Stats Mock -->
+      <div class="monitor-dashboard">
+        <div class="monitor-header">
+          <span>🟢 nginx-server — RUNNING</span>
+          <button class="btn-sm" id="refreshStats">⟳ Refresh</button>
+        </div>
+        <div class="stats-row" id="statsRow"></div>
+        <div class="logs-panel">
+          <div class="logs-header">Container Logs</div>
+          <div class="logs-output" id="logsOutput"></div>
+        </div>
+      </div>
+
+      <div class="cmd-section">
+        <h3 class="cmd-title">Monitoring Commands</h3>
+        <div class="cmd-grid" id="monitorCmds"></div>
+      </div>
+
+      <!-- Troubleshooting -->
+      <div class="trouble-section">
+        <h3>Common Issues & Fixes</h3>
+        <div class="trouble-list" id="troubleList"></div>
+      </div>
+    </section>
+
+    <!-- MODULE 5 — BEST PRACTICES -->
+    <section class="module" id="bestpractices">
+      <div class="module-header">
+        <div class="module-number">05</div>
+        <div class="module-meta">
+          <h2>Best Practices</h2>
+          <p>Production-ready patterns for container-based web app deployment.</p>
+        </div>
+      </div>
+
+      <div class="bp-grid" id="bpGrid"></div>
+
+      <!-- Docker Compose Example -->
+      <div class="concept-card full mt">
+        <div class="concept-icon">🎼</div>
+        <h3>Docker Compose — Full Stack Example</h3>
+        <div class="code-block" data-lang="yaml">
+          <div class="code-copy" onclick="copyCode(this)">copy</div>
+          <pre><code><span class="kw">version:</span> <span class="str">'3.9'</span>
+
+<span class="kw">services:</span>
+  <span class="kw">nginx:</span>
+    <span class="kw">image:</span> nginx:alpine
+    <span class="kw">ports:</span>
+      - <span class="str">"80:80"</span>
+    <span class="kw">volumes:</span>
+      - ./html:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    <span class="kw">healthcheck:</span>
+      <span class="kw">test:</span> [<span class="str">"CMD"</span>, <span class="str">"wget"</span>, <span class="str">"-q"</span>, <span class="str">"--spider"</span>, <span class="str">"http://localhost"</span>]
+      <span class="kw">interval:</span> 30s
+      <span class="kw">retries:</span> 3
+    <span class="kw">restart:</span> unless-stopped
+    <span class="kw">networks:</span>
+      - webnet
+
+  <span class="kw">app:</span>
+    <span class="kw">build:</span> ./app
+    <span class="kw">environment:</span>
+      - NODE_ENV=production
+    <span class="kw">depends_on:</span>
+      - db
+    <span class="kw">networks:</span>
+      - webnet
+
+  <span class="kw">db:</span>
+    <span class="kw">image:</span> mysql:8
+    <span class="kw">volumes:</span>
+      - db_data:/var/lib/mysql
+    <span class="kw">environment:</span>
+      MYSQL_ROOT_PASSWORD: <span class="str">${DB_PASS}</span>
+    <span class="kw">networks:</span>
+      - webnet
+
+<span class="kw">volumes:</span>
+  db_data:
+
+<span class="kw">networks:</span>
+  webnet:</code></pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FLOATING PROGRESS -->
+  <div class="floating-progress" id="floatingProgress">
+    <div class="fp-inner">
+      <div class="fp-label">Progress</div>
+      <div class="fp-modules" id="fpModules"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <footer class="site-footer">
+    <p>Docker Web Server Mastery · Built for learning containerization · <span id="year"></span></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
